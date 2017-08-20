@@ -16,6 +16,7 @@ struct _HandyWindow {
 	GtkApplicationWindow parent_instance;
 
 	GtkNotebook *tab_container;
+	HandyPopover *terminal_popover;
 };
 
 G_DEFINE_TYPE(HandyWindow, handy_window, GTK_TYPE_APPLICATION_WINDOW)
@@ -43,10 +44,6 @@ HandyWindow *handy_window_new() {
 
 gboolean on_button_press(VteTerminal *terminal, GdkEvent *event, gpointer user_data) {
 	if (event->type == GDK_BUTTON_PRESS && event->button.button == GDK_BUTTON_SECONDARY) {
-		HandyPopover *popover = (HandyPopover *)handy_popover_new(terminal);
-
-		handy_popover_setup(popover);
-
 		GdkRectangle *r = malloc(sizeof(GdkRectangle));
 
 		r->x = event->button.x;
@@ -54,9 +51,10 @@ gboolean on_button_press(VteTerminal *terminal, GdkEvent *event, gpointer user_d
 		r->width = 0;
 		r->height = 0;
 
-		gtk_popover_set_pointing_to(GTK_POPOVER(popover), r);
-		gtk_popover_popup(GTK_POPOVER(popover));
-		gtk_widget_show_all(GTK_WIDGET(popover));
+		gtk_popover_set_relative_to(GTK_POPOVER(((HandyWindow *)user_data)->terminal_popover), GTK_WIDGET(terminal));
+		gtk_popover_set_pointing_to(GTK_POPOVER(((HandyWindow *)user_data)->terminal_popover), r);
+		gtk_popover_popup(GTK_POPOVER(((HandyWindow *)user_data)->terminal_popover));
+		gtk_widget_show_all(GTK_WIDGET(((HandyWindow *)user_data)->terminal_popover));
 	}
 
 	return FALSE;
@@ -103,6 +101,10 @@ void handy_window_setup(HandyWindow *window) {
 	g_signal_connect(window, "bla", (GCallback)c, NULL);
 
 	handy_window_setup_terminals(window, 10);
+
+	window->terminal_popover = (HandyPopover *)handy_popover_new();
+
+	handy_popover_setup(window->terminal_popover);
 }
 
 void handy_window_show_hide(const char *keystring, void *user_data) {

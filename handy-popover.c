@@ -47,8 +47,8 @@ static void handy_popover_class_init(HandyPopoverClass *class) {
 	// property and signal definitions go here
 }
 
-HandyPopover *handy_popover_new(VteTerminal *terminal) {
-	return g_object_new(HANDY_TYPE_POPOVER, "relative-to", terminal, NULL);
+HandyPopover *handy_popover_new() {
+	return g_object_new(HANDY_TYPE_POPOVER, NULL);
 }
 
 void handy_popover_setup(HandyPopover *popover) {
