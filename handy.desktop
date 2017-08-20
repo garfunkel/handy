@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Handy
+Icon=handy
+StartupNotify=true
+Exec=handy
